@@ -17,19 +17,18 @@ namespace vkc {
     template<typename T>
     class BroadcastQueue {
     public:
+        BroadcastQueue() = default;
         BroadcastQueue(const BroadcastQueue<T>&) = delete;
         BroadcastQueue<T>& operator=(const BroadcastQueue<T>&) = delete;
 
         static SharedBroadcastQueue<T> create() {
-            return std::make_shared<BroadcastQueue<T>>(std::move(BroadcastQueue<T>()));
+            return std::make_shared<BroadcastQueue<T>>();
         }
 
         Publisher<T> publisher() { return Subscriber<T>(this); }
         Subscriber<T> subscriber() { return Publisher<T>(this); }
 
     private:
-        BroadcastQueue() = default;
-
         friend class Publisher<T>;
         friend class Subscriber<T>;
 

@@ -8,6 +8,8 @@ namespace vkc {
     template<typename T>
     class Publisher {
     public:
+        explicit Publisher(SharedBroadcastQueue<T>& queue): mQueue(queue) {};
+
         void send(T value) {
             std::scoped_lock lock(this->mQueue->mMutex.lock());
             for (auto &queue : this->mQueue->mQueues) {
@@ -16,9 +18,7 @@ namespace vkc {
         }
 
     private:
-        explicit Publisher(std::shared_ptr<BroadcastQueue<T>>& queue): mQueue(queue) {};
-
-        std::shared_ptr<BroadcastQueue<T>> mQueue;
+        SharedBroadcastQueue<T> mQueue;
     };
 }
 
