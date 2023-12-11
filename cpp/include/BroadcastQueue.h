@@ -25,9 +25,6 @@ namespace vkc {
             return std::make_shared<BroadcastQueue<T>>();
         }
 
-        Publisher<T> publisher() { return Subscriber<T>(this); }
-        Subscriber<T> subscriber() { return Publisher<T>(this); }
-
     private:
         friend class Publisher<T>;
         friend class Subscriber<T>;

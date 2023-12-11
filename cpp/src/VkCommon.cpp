@@ -5,6 +5,8 @@
 
 void hello() {
     auto q = vkc::BroadcastQueue<int>::create();
+    auto publisher = vkc::Publisher(q);
+    auto subscriber = vkc::Subscriber(q);
 
     std::cout << "Hello, World!" << std::endl;
 }
