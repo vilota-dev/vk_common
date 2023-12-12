@@ -11,9 +11,9 @@ namespace vkc {
         explicit Publisher(SharedBroadcastQueue<T>& queue): mQueue(queue) {};
 
         void send(T value) {
-            std::scoped_lock lock(this->mQueue->mMutex.lock());
+            std::scoped_lock<std::mutex> lock(this->mQueue->mMutex);
             for (auto &queue : this->mQueue->mQueues) {
-                queue.push(value);
+                queue->push(value);
             }
         }
 
