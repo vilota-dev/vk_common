@@ -17,7 +17,7 @@ namespace vkc {
 
         T recv() {
             T result;
-            while (!this->mQueue->pop(result)) {}
+            this->mQueue->pop(result);
             return result;
         }
 
