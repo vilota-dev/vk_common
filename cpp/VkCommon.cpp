@@ -1,8 +1,8 @@
-#include "../include/VkCommon.h"
+#include <vk-common/VkCommon.h>
 
 #include <iostream>
 
-void hello() {
+int main() {
     //
     auto q = vkc::BroadcastQueue<int>::create();
     auto publisher = vkc::Publisher(q);
@@ -17,4 +17,7 @@ void hello() {
     // auto s2 = r->getSubscriber<std::string>("topic1");
 
     std::cout << "Hello, World!" << std::endl;
+
+    return 0;
 }
+
