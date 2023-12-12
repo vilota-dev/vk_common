@@ -14,8 +14,13 @@ namespace vkc {
     template<typename T>
     using SharedBroadcastQueue = std::shared_ptr<BroadcastQueue<T>>;
 
+    class AbstractBQ {
+    public:
+        virtual ~AbstractBQ() = default;
+    };
+
     template<typename T>
-    class BroadcastQueue {
+    class BroadcastQueue : public AbstractBQ {
     public:
         BroadcastQueue() = default;
         BroadcastQueue(const BroadcastQueue<T>&) = delete;
