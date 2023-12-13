@@ -14,6 +14,8 @@ namespace vkc {
         Registry() = default;
         Registry(const Registry&) = delete;
         Registry& operator=(const Registry&) = delete;
+        Registry(Registry&&) = delete;
+        Registry& operator=(Registry&&) = delete;
 
         template <typename T>
         Subscriber<T> getSubscriber(const std::string &topic) {
@@ -36,6 +38,7 @@ namespace vkc {
             try {
                 return std::dynamic_pointer_cast<BroadcastQueue<T>>(queues.at(topic));
             } catch (std::bad_cast &e) {
+                // TODO: investigate - doesn't seem to be throwing?
                 throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
             }
         }
