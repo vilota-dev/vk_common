@@ -20,13 +20,13 @@ namespace vkc {
         template <typename T>
         Subscriber<T> getSubscriber(const std::string &topic) {
             auto queue = getQueue<T>(topic);
-            return Subscriber<T>(queue);
+            return Subscriber<T>(queue, topic);
         }
 
         template <typename T>
         Publisher<T> getPublisher(const std::string &topic) {
             auto queue = getQueue<T>(topic);
-            return Publisher<T>(queue);
+            return Publisher<T>(queue, topic);
         }
 
     private:
@@ -36,6 +36,7 @@ namespace vkc {
                 queues.emplace(topic, BroadcastQueue<T>::create());
             }
             try {
+                // HM: i believe the cast will not throw, instead it returns a null pointer
                 return std::dynamic_pointer_cast<BroadcastQueue<T>>(queues.at(topic));
             } catch (std::bad_cast &e) {
                 // TODO: investigate - doesn't seem to be throwing?

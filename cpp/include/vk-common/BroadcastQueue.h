@@ -22,15 +22,20 @@ namespace vkc {
     template<typename T>
     class BroadcastQueue : public AbstractBQ {
     public:
-        BroadcastQueue() = default;
+        // BroadcastQueue() = default;
         BroadcastQueue(const BroadcastQueue<T>&) = delete;
         BroadcastQueue<T>& operator=(const BroadcastQueue<T>&) = delete;
 
         static SharedBroadcastQueue<T> create() {
-            return std::make_shared<BroadcastQueue<T>>();
+            // using raw pointer initializer to make private constructor work here
+            // https://stackoverflow.com/a/71379724
+            return std::shared_ptr<BroadcastQueue<T>>(new BroadcastQueue());
+            // return std::make_shared<BroadcastQueue<T>>();
         }
 
     private:
+        BroadcastQueue() = default;
+
         friend class Publisher<T>;
         friend class Subscriber<T>;
 
