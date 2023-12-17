@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "BroadcastQueue.h"
+#include "CallbackPool.h"
 
 namespace vkc {
     template<typename T>

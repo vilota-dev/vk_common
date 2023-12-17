@@ -26,7 +26,14 @@ namespace vkc {
         template <typename T>
         Publisher<T> getPublisher(const std::string &topic) {
             auto queue = getQueue<T>(topic);
-            return Publisher<T>(queue, topic);
+            auto pool = getCallbackPool<T>(topic);
+            return Publisher<T>(queue, pool, topic);
+        }
+
+        template <typename T>
+        void registerCallback(const std::string &topic, std::function<void(T)> f) {
+            auto pool = getCallbackPool<T>(topic);
+            pool->addCallback(f);
         }
 
     private:
@@ -44,7 +51,22 @@ namespace vkc {
             }
         }
 
+        template <typename T>
+        SharedCallbackPool<T> getCallbackPool(const std::string &topic) {
+            if (pool.find(topic) == pool.end()) {
+                pool.emplace(topic, CallbackPool<T>::create());
+            }
+            try {
+                // HM: i believe the cast will not throw, instead it returns a null pointer
+                return std::dynamic_pointer_cast<CallbackPool<T>>(pool.at(topic));
+            } catch (std::bad_cast &e) {
+                // TODO: investigate - doesn't seem to be throwing?
+                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
+            }
+        }
+
         std::map<std::string, std::shared_ptr<AbstractBQ>> queues;
+        std::map<std::string, std::shared_ptr<AbstractCP>> pool;
     };
 }
 
