@@ -29,7 +29,7 @@ namespace vkc {
             return std::shared_ptr<CallbackPool<T>>(new CallbackPool());
         }
 
-        void addCallback(std::function<void(T)> f) {
+        void addCallback(std::function<void(T&)> f) {
             std::scoped_lock<std::mutex> lock(mMutex);
             mPool.push_back(f);
         }
@@ -41,7 +41,7 @@ namespace vkc {
         friend class Subscriber<T>;
         
         std::mutex mMutex;
-        std::vector<std::function<void(T)>> mPool; // it is important the callback is quick to run, so not to block the caller
+        std::vector<std::function<void(T&)>> mPool; // it is important the callback is quick to run, so not to block the caller
     };
 
 } // namespace
