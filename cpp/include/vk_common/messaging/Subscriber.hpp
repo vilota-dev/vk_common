@@ -2,8 +2,8 @@
 #define VK_COMMON_SUBSCRIBER_H
 
 #include <memory>
-#include "BroadcastQueue.h"
-#include "CallbackPool.h"
+#include "BroadcastQueue.hpp"
+#include "CallbackPool.hpp"
 
 namespace vkc {
     template<typename T>

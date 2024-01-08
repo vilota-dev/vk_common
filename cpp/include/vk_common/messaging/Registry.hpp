@@ -5,8 +5,8 @@
 #include <memory>
 #include <map>
 
-#include "Publisher.h"
-#include "Subscriber.h"
+#include "Publisher.hpp"
+#include "Subscriber.hpp"
 
 namespace vkc {
     class Registry {
