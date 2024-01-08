@@ -80,3 +80,5 @@ add_library(vk_common STATIC
 target_include_directories(vk_common 
         PRIVATE include/vk_common/capnp
         PUBLIC include)
+target_link_libraries(vk_common
+        PUBLIC CapnProto::capnp)
