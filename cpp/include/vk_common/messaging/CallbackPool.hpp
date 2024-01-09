@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VKC_CALLBACKPOOL_HPP
+#define VKC_CALLBACKPOOL_HPP
 
 #include <memory>
 #include <mutex>
@@ -43,5 +44,6 @@ namespace vkc {
         std::mutex mMutex;
         std::vector<std::function<void(T&)>> mPool; // it is important the callback is quick to run, so not to block the caller
     };
+}
 
-} // namespace
+#endif

@@ -1,5 +1,5 @@
-#ifndef VK_COMMON_BROADCASTQUEUE_H
-#define VK_COMMON_BROADCASTQUEUE_H
+#ifndef VKC_BROADCASTQUEUE_HPP
+#define VKC_BROADCASTQUEUE_HPP
 
 #include <memory>
 #include <mutex>
@@ -22,15 +22,11 @@ namespace vkc {
     template<typename T>
     class BroadcastQueue : public AbstractBQ {
     public:
-        // BroadcastQueue() = default;
         BroadcastQueue(const BroadcastQueue<T>&) = delete;
         BroadcastQueue<T>& operator=(const BroadcastQueue<T>&) = delete;
 
         static SharedBroadcastQueue<T> create() {
-            // using raw pointer initializer to make private constructor work here
-            // https://stackoverflow.com/a/71379724
             return std::shared_ptr<BroadcastQueue<T>>(new BroadcastQueue());
-            // return std::make_shared<BroadcastQueue<T>>();
         }
 
     private:
@@ -44,4 +40,4 @@ namespace vkc {
     };
 }
 
-#endif //VK_COMMON_BROADCASTQUEUE_H
+#endif

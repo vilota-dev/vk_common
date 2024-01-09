@@ -1,5 +1,5 @@
-#ifndef VK_COMMON_REGISTRY_H
-#define VK_COMMON_REGISTRY_H
+#ifndef VKC_REGISTRY_HPP
+#define VKC_REGISTRY_HPP
 
 #include <string>
 #include <memory>
@@ -9,6 +9,7 @@
 #include "Subscriber.hpp"
 
 namespace vkc {
+    /// Represents a central place where all publisher and subscriber to a topic can be obtained.
     class Registry {
     public:
         Registry() = default;
@@ -17,12 +18,22 @@ namespace vkc {
         Registry(Registry&&) = delete;
         Registry& operator=(Registry&&) = delete;
 
+        /// Constructs a subscriber to a topic.
+        ///
+        /// If the topic is already registered to a different message type than `T`, the returned 
+        /// subscriber will not be "good" and cannot be used. You may use the `Subscriber::good` method to 
+        /// check if the returned subscriber is "good". 
         template <typename T>
         Subscriber<T> getSubscriber(const std::string &topic) {
             auto queue = getQueue<T>(topic);
             return Subscriber<T>(queue, topic);
         }
 
+        /// Constructs a publisher to a topic.
+        ///
+        /// If the topic is already registered to a different message type than `T`, the returned 
+        /// publisher will not be "good" and cannot be used. You may use the `Publisher::good` method to 
+        /// check if the returned publisher is "good".
         template <typename T>
         Publisher<T> getPublisher(const std::string &topic) {
             auto queue = getQueue<T>(topic);
@@ -31,16 +42,38 @@ namespace vkc {
             return Publisher<T>(queue, poolPre, poolPost, topic);
         }
 
+        /// Register an early callback for a topic.
+        ///
+        /// An early callback is 
+        ///
+        /// If the topic is already registered to a different message type than `T`, `false` will
+        /// be returned and the given callback will not be registered.
         template <typename T>
-        void registerCallbackPre(const std::string &topic, std::function<void(T&)> f) {
+        bool registerCallbackPre(const std::string &topic, std::function<void(T&)> f) {
             auto pool = getCallbackPoolPre<T>(topic);
-            pool->addCallback(f);
+
+            if (pool != nullptr) {
+                pool->addCallback(f);
+                return true;
+            } else {
+                return false;
+            }
         }
 
+        /// Register a callback for a topic.
+        ///
+        /// If the topic is already registered to a different message type than `T`, `false` will
+        /// be returned and the given callback will not be registered.
         template <typename T>
-        void registerCallbackPost(const std::string &topic, std::function<void(T&)> f) {
+        bool registerCallbackPost(const std::string &topic, std::function<void(T&)> f) {
             auto pool = getCallbackPoolPost<T>(topic);
-            pool->addCallback(f);
+            
+            if (pool != nullptr) {
+                pool->addCallback(f);
+                return true;
+            } else {
+                return false;
+            }
         }
 
     private:
@@ -49,13 +82,8 @@ namespace vkc {
             if (queues.find(topic) == queues.end()) {
                 queues.emplace(topic, BroadcastQueue<T>::create());
             }
-            try {
-                // HM: i believe the cast will not throw, instead it returns a null pointer
-                return std::dynamic_pointer_cast<BroadcastQueue<T>>(queues.at(topic));
-            } catch (std::bad_cast &e) {
-                // TODO: investigate - doesn't seem to be throwing?
-                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
-            }
+            
+            return std::dynamic_pointer_cast<BroadcastQueue<T>>(queues.at(topic));
         }
 
         template <typename T>
@@ -63,13 +91,8 @@ namespace vkc {
             if (poolPre.find(topic) == poolPre.end()) {
                 poolPre.emplace(topic, CallbackPool<T>::create());
             }
-            try {
-                // HM: i believe the cast will not throw, instead it returns a null pointer
-                return std::dynamic_pointer_cast<CallbackPool<T>>(poolPre.at(topic));
-            } catch (std::bad_cast &e) {
-                // TODO: investigate - doesn't seem to be throwing?
-                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
-            }
+
+            return std::dynamic_pointer_cast<CallbackPool<T>>(poolPre.at(topic));
         }
 
         template <typename T>
@@ -77,13 +100,8 @@ namespace vkc {
             if (poolPost.find(topic) == poolPost.end()) {
                 poolPost.emplace(topic, CallbackPool<T>::create());
             }
-            try {
-                // HM: i believe the cast will not throw, instead it returns a null pointer
-                return std::dynamic_pointer_cast<CallbackPool<T>>(poolPost.at(topic));
-            } catch (std::bad_cast &e) {
-                // TODO: investigate - doesn't seem to be throwing?
-                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
-            }
+
+            return std::dynamic_pointer_cast<CallbackPool<T>>(poolPost.at(topic));
         }
 
         std::map<std::string, std::shared_ptr<AbstractBQ>> queues;
@@ -91,4 +109,4 @@ namespace vkc {
     };
 }
 
-#endif //VK_COMMON_REGISTRY_H
+#endif
