@@ -5,16 +5,16 @@ $Cxx.namespace("ecal");
 
 struct Field {
     enum NumericType {
-        FLOAT32 @0;
-        FLOAT64 @1;
-        INT8 @2;
-        INT16 @3;
-        INT32 @4;
-        INT64 @5;
-        UINT8 @6;
-        UINT16 @7;
-        UINT32 @8;
-        UINT64 @9;
+        Float32 @0;
+        Float64 @1;
+        Int8 @2;
+        Int16 @3;
+        Int32 @4;
+        Int64 @5;
+        UInt8 @6;
+        UInt16 @7;
+        UInt32 @8;
+        UInt64 @9;
     }
     name @0 :Text;
     offset @1 :UInt32;
