@@ -20,9 +20,8 @@ namespace vkc {
 
         /// Constructs a subscriber to a topic.
         ///
-        /// If the topic is already registered to a different message type than `T`, the returned 
-        /// subscriber will not be "good" and cannot be used. You may use the `Subscriber::good` method to 
-        /// check if the returned subscriber is "good". 
+        /// If the topic is already registered to a different message type than `T`, a runtime exception
+        /// will be throwed.
         template <typename T>
         Subscriber<T> getSubscriber(const std::string &topic) {
             auto queue = getQueue<T>(topic);
@@ -31,9 +30,8 @@ namespace vkc {
 
         /// Constructs a publisher to a topic.
         ///
-        /// If the topic is already registered to a different message type than `T`, the returned 
-        /// publisher will not be "good" and cannot be used. You may use the `Publisher::good` method to 
-        /// check if the returned publisher is "good".
+        /// If the topic is already registered to a different message type than `T`, a runtime exception
+        /// will be throwed.
         template <typename T>
         Publisher<T> getPublisher(const std::string &topic) {
             auto queue = getQueue<T>(topic);
@@ -82,8 +80,12 @@ namespace vkc {
             if (queues.find(topic) == queues.end()) {
                 queues.emplace(topic, BroadcastQueue<T>::create());
             }
-            
-            return std::dynamic_pointer_cast<BroadcastQueue<T>>(queues.at(topic));
+
+            auto queue = std::dynamic_pointer_cast<BroadcastQueue<T>>(queues.at(topic));
+            if (queue == nullptr) {
+                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
+            }
+            return queue;
         }
 
         template <typename T>
@@ -92,7 +94,11 @@ namespace vkc {
                 poolPre.emplace(topic, CallbackPool<T>::create());
             }
 
-            return std::dynamic_pointer_cast<CallbackPool<T>>(poolPre.at(topic));
+            auto queue = std::dynamic_pointer_cast<CallbackPool<T>>(poolPre.at(topic));
+            if (queue == nullptr) {
+                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
+            }
+            return queue;
         }
 
         template <typename T>
@@ -101,7 +107,11 @@ namespace vkc {
                 poolPost.emplace(topic, CallbackPool<T>::create());
             }
 
-            return std::dynamic_pointer_cast<CallbackPool<T>>(poolPost.at(topic));
+            auto queue = std::dynamic_pointer_cast<CallbackPool<T>>(poolPost.at(topic));
+            if (queue == nullptr) {
+                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
+            }
+            return queue;
         }
 
         std::map<std::string, std::shared_ptr<AbstractBQ>> queues;

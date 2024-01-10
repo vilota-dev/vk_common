@@ -27,18 +27,7 @@ namespace vkc {
         Subscriber(Subscriber&& e) = default;
         Subscriber& operator=(Subscriber&& mE) = default;
 
-        /// Returns whether this subscriber can be used.
-        ///
-        /// If this method returns false, calling any other method of this object may invoke undefined behavior.
-        bool good() {
-            return this->mQueue != nullptr;
-        }
-
         /// Block until there is an available message and then returns it.
-        ///
-        /// This method must not be called if this subscriber is not "good" or it is undefined behavior.
-        ///
-        /// See the `good` method for more information.
         T recv() {
             T result;
             this->mQueue->pop(result);
@@ -47,10 +36,6 @@ namespace vkc {
         }
 
         /// Try to receive a message now or returns false.
-        ///
-        /// This method must not be called if this subscriber is not "good" or it is undefined behavior.
-        ///
-        /// See the `good` method for more information.
         bool try_recv(T& result) {
             return this->mQueue->try_pop(result);
         }
