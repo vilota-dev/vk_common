@@ -20,20 +20,7 @@ namespace vkc {
         Publisher(Publisher&& e) = default;
         Publisher& operator=(Publisher&& mE) = default;
 
-        /// Returns whether this publisher can be used.
-        ///
-        /// If this method returns false, calling any other method of this object may invoke undefined behavior.
-        bool good() {
-            return this->mQueue != nullptr && 
-                this->mPoolPre != nullptr && 
-                this->mPoolPost != nullptr;
-        }
-
         /// Send the given message to all subscribers.
-        ///
-        /// This method must not be called if this publisher is not "good" or it is undefined behavior.
-        ///
-        /// See the `good` method for more information.
         void send(T value) {
             {
                 std::scoped_lock<std::mutex> lock(this->mPoolPre->mMutex);
