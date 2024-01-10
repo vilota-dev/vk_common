@@ -18,12 +18,12 @@ namespace vkc {
             kj::ArrayPtr<const kj::byte> bytes(reinterpret_cast<const kj::byte*>(buffer), buffer_size);
             kj::ArrayInputStream stream(bytes);
             capnp::InputStreamMessageReader reader(stream);
-            this->mBuffer.setRoot(reader);
+            this->mBuffer->setRoot(reader);
         }
 
         /// Construct an owned version of a capnproto type `T` by deep-copying from a reader.
         explicit Owned(typename T::Reader& reader): mBuffer(new capnp::MallocMessageBuilder())  {
-            this->mBuffer.setRoot(reader);
+            this->mBuffer->setRoot(reader);
         }
 
         operator typename T::Builder() {
