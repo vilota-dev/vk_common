@@ -7,9 +7,14 @@
 #include "CallbackPool.hpp"
 
 namespace vkc {
+    class AbstractSubscriber {
+    public:
+        virtual ~AbstractSubscriber() = 0;
+    };
+
     /// Represents a subscriber to a message type.
     template<typename T>
-    class Subscriber {
+    class Subscriber : public AbstractSubscriber {
     public:
         explicit Subscriber(SharedBroadcastQueue<T>& parent, const std::string& topic) : mParent(parent), mTopic(topic), mCount(0) {
             std::scoped_lock lock(parent->mMutex);

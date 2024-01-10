@@ -5,9 +5,14 @@
 #include "CallbackPool.hpp"
 
 namespace vkc {
+    class AbstractPublisher {
+    public:
+        virtual ~AbstractPublisher() = 0;
+    };
+
     /// Represents a publisher to a message type.
     template<typename T>
-    class Publisher {
+    class Publisher : public AbstractPublisher {
     public:
         explicit Publisher(SharedBroadcastQueue<T>& queue, SharedCallbackPool<T>& poolPre, SharedCallbackPool<T>& poolPost,
             const std::string& topic): mQueue(queue), mPoolPre(poolPre), mPoolPost(poolPost), mTopic(topic), mCount(0) {};
