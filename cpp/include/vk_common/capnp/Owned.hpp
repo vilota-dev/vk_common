@@ -6,14 +6,15 @@
 #include <capnp/serialize.h>
 
 namespace vkc {
-
+    /// Owned version of a capnproto value.
     template <typename T>
     class Owned {
     public:
+        Owned() = default;
         /// Construct an owned version of a capnproto type `T` by deserializing the given buffer.
         ///
         /// The given buffer must be a capnproto serialized value of a `T`.
-        explicit Owned(const char* buffer, size_t buffer_size): Owned() {
+        explicit Owned(const char* buffer, size_t buffer_size): mBuffer(new capnp::MallocMessageBuilder())  {
             kj::ArrayPtr<const kj::byte> bytes(reinterpret_cast<const kj::byte*>(buffer), buffer_size);
             kj::ArrayInputStream stream(bytes);
             capnp::InputStreamMessageReader reader(stream);
@@ -21,7 +22,7 @@ namespace vkc {
         }
 
         /// Construct an owned version of a capnproto type `T` by deep-copying from a reader.
-        explicit Owned(typename T::Reader& reader): Owned() {
+        explicit Owned(typename T::Reader& reader): mBuffer(new capnp::MallocMessageBuilder())  {
             this->mBuffer.setRoot(reader);
         }
 
@@ -33,9 +34,23 @@ namespace vkc {
             return this->mBuffer->template getRoot<T>();
         }
 
-    private:
-        explicit Owned(): mBuffer(new capnp::MallocMessageBuilder()) {}
+        bool operator==(std::nullptr_t) {
+            return this->mBuffer == nullptr;
+        }
 
+        bool operator!=(std::nullptr_t) {
+            return this->mBuffer != nullptr;
+        }
+
+        bool operator==(const Owned<T>& other) {
+            return this->mBuffer == other.mBuffer;
+        }
+
+        bool operator!=(const Owned<T>& other) {
+            return this->mBuffer != other.mBuffer;
+        }
+
+    private:
         std::unique_ptr<capnp::MessageBuilder> mBuffer;
     };
 
