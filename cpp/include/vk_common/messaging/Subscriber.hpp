@@ -2,6 +2,7 @@
 #define VKC_SUBSCRIBER_HPP
 
 #include <memory>
+#include <algorithm>
 #include "BroadcastQueue.hpp"
 #include "CallbackPool.hpp"
 
@@ -17,10 +18,12 @@ namespace vkc {
             this->mQueue = queue;
         };
         ~Subscriber() {
-            std::scoped_lock lock(mParent->mMutex);
-            auto it = find(mParent->mQueues.begin(), mParent->mQueues.end(), this->mQueue);
-            if (it != mParent->mQueues.end()) {
-                mParent->mQueues.erase(it);
+            if (mParent) {
+                std::scoped_lock lock(mParent->mMutex);
+                auto it = std::find(mParent->mQueues.begin(), mParent->mQueues.end(), this->mQueue);
+                if (it != mParent->mQueues.end()) {
+                    mParent->mQueues.erase(it);
+                }
             }
         }
         Subscriber(const Subscriber&) = delete;
