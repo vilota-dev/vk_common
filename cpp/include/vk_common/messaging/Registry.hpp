@@ -15,8 +15,8 @@ namespace vkc {
         Registry() = default;
         Registry(const Registry&) = delete;
         Registry& operator=(const Registry&) = delete;
-        Registry(Registry&&) = delete;
-        Registry& operator=(Registry&&) = delete;
+        Registry(Registry&&) = default;
+        Registry& operator=(Registry&&) = default;
 
         /// Constructs a subscriber to a topic.
         ///
