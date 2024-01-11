@@ -1,21 +1,23 @@
-@0xe3148e3e52c75da3
+@0xe3148e3e52c75da3;
 
 using Cxx = import "/capnp/c++.capnp";
-$Cxx.namespace("ecal");
+$Cxx.namespace("vkc");
 
 struct Field {
+
     enum NumericType {
-        Float32 @0;
-        Float64 @1;
-        Int8 @2;
-        Int16 @3;
-        Int32 @4;
-        Int64 @5;
-        UInt8 @6;
-        UInt16 @7;
-        UInt32 @8;
-        UInt64 @9;
+        float32 @0;
+        float64 @1;
+        int8 @2;
+        int16 @3;
+        int32 @4;
+        int64 @5;
+        uint8 @6;
+        uint16 @7;
+        uint32 @8;
+        uint64 @9;
     }
+
     name @0 :Text;
     offset @1 :UInt32;
     type @2 :NumericType;
@@ -24,7 +26,7 @@ struct Field {
 struct PointCloud {
     header @0 :import "header.capnp".Header;
     pose @1 :import "odometry3d.capnp".Odometry3d;
-    point_stride @2 :UInt32; # number of bytes between points in `points`
+    pointStride @2 :UInt32; # number of bytes between points in `points`
     fields @3 :List(Field); # fields in each point
     points @4 :Data;
 }
