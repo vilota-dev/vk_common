@@ -16,14 +16,14 @@ namespace vkc {
         Registry(const Registry&) = delete;
         Registry& operator=(const Registry&) = delete;
         Registry(Registry&&) = default;
-        Registry& operator=(Registry&&) = default;
+        Registry& operator=(Registry&&) = delete;
 
         /// Constructs a subscriber to a topic.
         ///
         /// If the topic is already registered to a different message type than `T`, a runtime exception
         /// will be throwed.
         template <typename T>
-        Subscriber<T> getSubscriber(const std::string &topic) {
+        Subscriber<T> getSubscriber(const std::string_view topic) {
             auto queue = getQueue<T>(topic);
             return Subscriber<T>(queue, topic);
         }
@@ -33,7 +33,7 @@ namespace vkc {
         /// If the topic is already registered to a different message type than `T`, a runtime exception
         /// will be throwed.
         template <typename T>
-        Publisher<T> getPublisher(const std::string &topic) {
+        Publisher<T> getPublisher(const std::string_view topic) {
             auto queue = getQueue<T>(topic);
             auto poolPre = getCallbackPoolPre<T>(topic);
             auto poolPost = getCallbackPoolPost<T>(topic);
@@ -47,7 +47,7 @@ namespace vkc {
         /// If the topic is already registered to a different message type than `T`, `false` will
         /// be returned and the given callback will not be registered.
         template <typename T>
-        bool registerCallbackPre(const std::string &topic, std::function<void(T&)> f) {
+        bool registerCallbackPre(const std::string_view topic, std::function<void(T&)> f) {
             auto pool = getCallbackPoolPre<T>(topic);
 
             if (pool != nullptr) {
@@ -63,7 +63,7 @@ namespace vkc {
         /// If the topic is already registered to a different message type than `T`, `false` will
         /// be returned and the given callback will not be registered.
         template <typename T>
-        bool registerCallbackPost(const std::string &topic, std::function<void(T&)> f) {
+        bool registerCallbackPost(const std::string_view topic, std::function<void(T&)> f) {
             auto pool = getCallbackPoolPost<T>(topic);
             
             if (pool != nullptr) {
@@ -76,46 +76,49 @@ namespace vkc {
 
     private:
         template <typename T>
-        SharedBroadcastQueue<T> getQueue(const std::string &topic) {
-            if (queues.find(topic) == queues.end()) {
-                queues.emplace(topic, BroadcastQueue<T>::create());
+        SharedBroadcastQueue<T> getQueue(const std::string_view topic) {
+            auto it = mQueues.find(topic);
+            if (it == mQueues.end()) {
+                it = mQueues.emplace(topic, BroadcastQueue<T>::create()).first;
             }
 
-            auto queue = std::dynamic_pointer_cast<BroadcastQueue<T>>(queues.at(topic));
+            auto queue = std::dynamic_pointer_cast<BroadcastQueue<T>>(it->second);
             if (queue == nullptr) {
-                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
+                throw std::runtime_error("[registry] topic - " + std::string(topic) + ": already exists, but with a different type");
             }
             return queue;
         }
 
         template <typename T>
-        SharedCallbackPool<T> getCallbackPoolPre(const std::string &topic) {
-            if (poolPre.find(topic) == poolPre.end()) {
-                poolPre.emplace(topic, CallbackPool<T>::create());
+        SharedCallbackPool<T> getCallbackPoolPre(const std::string_view topic) {
+            auto it = mPoolPre.find(topic);
+            if (it == mPoolPre.end()) {
+                it = mPoolPre.emplace(topic, CallbackPool<T>::create()).first;
             }
 
-            auto queue = std::dynamic_pointer_cast<CallbackPool<T>>(poolPre.at(topic));
+            auto queue = std::dynamic_pointer_cast<CallbackPool<T>>(it->second);
             if (queue == nullptr) {
-                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
+                throw std::runtime_error("[registry] topic - " + std::string(topic) + ": already exists, but with a different type");
             }
             return queue;
         }
 
         template <typename T>
-        SharedCallbackPool<T> getCallbackPoolPost(const std::string &topic) {
-            if (poolPost.find(topic) == poolPost.end()) {
-                poolPost.emplace(topic, CallbackPool<T>::create());
+        SharedCallbackPool<T> getCallbackPoolPost(const std::string_view topic) {
+            auto it = mPoolPost.find(topic);
+            if (it == mPoolPost.end()) {
+                it = mPoolPost.emplace(topic, CallbackPool<T>::create()).first;
             }
 
-            auto queue = std::dynamic_pointer_cast<CallbackPool<T>>(poolPost.at(topic));
+            auto queue = std::dynamic_pointer_cast<CallbackPool<T>>(it->second);
             if (queue == nullptr) {
-                throw std::runtime_error("[registry] topic - " + topic + ": already exists, but with a different type");
+                throw std::runtime_error("[registry] topic - " + std::string(topic) + ": already exists, but with a different type");
             }
             return queue;
         }
 
-        std::map<std::string, std::shared_ptr<AbstractBQ>> queues;
-        std::map<std::string, std::shared_ptr<AbstractCP>> poolPre, poolPost;
+        std::map<std::string, std::shared_ptr<AbstractBQ>, std::less<>> mQueues;
+        std::map<std::string, std::shared_ptr<AbstractCP>, std::less<>> mPoolPre, mPoolPost;
     };
 }
 

@@ -13,7 +13,7 @@ namespace vkc {
             SharedBroadcastQueue<T>& queue,
             SharedCallbackPool<T>& poolPre,
             SharedCallbackPool<T>& poolPost,
-            const std::string& topic
+            const std::string_view topic
         ): mQueue(queue), mPoolPre(poolPre), mPoolPost(poolPost), mTopic(topic) {}
         Publisher(const Publisher&) = delete;
         Publisher(Publisher&&) = default;
@@ -46,7 +46,7 @@ namespace vkc {
         }
 
         /// Returns the topic name of this publisher.
-        const std::string& topic() const {
+        std::string_view topic() const {
             return this->mTopic; 
         }
 

@@ -11,7 +11,7 @@ namespace vkc {
     template<typename T>
     class Subscriber {
     public:
-        explicit Subscriber(SharedBroadcastQueue<T>& parent, const std::string& topic) : mParent(parent), mTopic(topic) {
+        explicit Subscriber(SharedBroadcastQueue<T>& parent, const std::string_view topic) : mParent(parent), mTopic(topic) {
             auto queue = std::make_shared<tbb::concurrent_bounded_queue<T>>();
             {
                 std::scoped_lock lock(mParent->mMutex);
@@ -45,16 +45,18 @@ namespace vkc {
         bool tryRecv(T& result) {
             if (this->mQueue->try_pop(result)) {
                 this->mCount++;
+                return true;
             }
+            return false;
         }
 
         /// Returns the topic name of this subscriber.
-        inline const std::string& topic() const {
+        std::string_view topic() const {
             return this->mTopic;
         }
 
         /// Returns the number of messages this subscriber has received so far.
-        inline uint64_t count() const {
+        uint64_t count() const {
             return mCount;
         }
 
