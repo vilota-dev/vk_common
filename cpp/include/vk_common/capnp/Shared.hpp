@@ -23,7 +23,7 @@ namespace vkc {
         /// from the stream.
         explicit Shared(kj::InputStream& stream): Shared() {
             this->mBuffer = std::shared_ptr<capnp::MallocMessageBuilder>(new capnp::MallocMessageBuilder());
-            capnp::readMessageCopy(stream, this->mBuilder);
+            capnp::readMessageCopy(stream, *this->mBuffer);
         }
 
         /// Construct an owned version of a capnproto type `T` by deep-copying from a reader.
