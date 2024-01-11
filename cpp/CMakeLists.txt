@@ -84,6 +84,7 @@ endforeach()
 add_library(vk_common STATIC
         ${VKC_CAPNP_HEADERS}
         ${VKC_CAPNP_SOURCES}
+        "include/vk_common/capnp/Shared.hpp"
         "include/vk_common/messaging/BroadcastQueue.hpp"
         "include/vk_common/messaging/CallbackPool.hpp"
         "include/vk_common/messaging/Publisher.hpp"
