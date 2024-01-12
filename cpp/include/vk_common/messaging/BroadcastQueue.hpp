@@ -16,7 +16,7 @@ namespace vkc {
 
     class AbstractBQ {
     public:
-        virtual ~AbstractBQ() = 0;
+        virtual ~AbstractBQ() = default;
     };
 
     template<typename T>
