@@ -19,7 +19,7 @@ struct Field {
     }
 
     name @0 :Text;
-    offset @1 :UInt32;
+    offset @1 :UInt32; # byte offset from start of data buffer
     type @2 :NumericType;
 }
 
