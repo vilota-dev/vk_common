@@ -37,9 +37,9 @@ namespace vkc {
             capnp::writeMessage(stream, *this->mBuffer);
         }
 
-        /// Implicitly use this as a `T::Reader`.
-        operator typename T::Reader() {
-            return this->mBuffer->template getRoot<T>();
+        /// Return a T::Reader.
+        typename T::Reader reader() {
+            return this->mBuffer->template getRoot<T>().asReader();
         }
 
         bool operator==(std::nullptr_t) {
