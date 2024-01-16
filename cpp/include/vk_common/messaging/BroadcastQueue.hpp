@@ -7,23 +7,16 @@
 #endif
 
 #include <atomic>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
+
+#include "Message.hpp"
 
 namespace vkc {
     template<typename T> class Publisher;
     template<typename T> class Subscriber;
     template<typename T> class BroadcastQueue;
-
-    /// Message containing a payload and its metadata.
-    template<typename T>
-    struct Message {
-        uint64_t mSequenceNumber;   //< Sequence number of message in its queue.
-        uint64_t mPublishTime;      //< Time instant, in miscroseconds, when the message is published.
-        T mPayload;                 //< Payload of the message (i.e. the actual data being sent).
-    };
 
     template<typename T>
     using SharedBroadcastQueue = std::shared_ptr<BroadcastQueue<T>>;

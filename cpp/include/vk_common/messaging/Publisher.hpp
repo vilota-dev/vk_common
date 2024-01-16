@@ -43,7 +43,7 @@ namespace vkc {
             {
                 std::scoped_lock lock(mPoolPre->mMutex);
                 for (auto &f : this->mPoolPre->mPool) {
-                    f(message.mPayload); // expect this may change the content
+                    f(message); // expect this may change the content
                 }
             }
 
@@ -60,6 +60,13 @@ namespace vkc {
             std::atomic_store_explicit(&entry->mNext, head, std::memory_order_release);
             entry->mCondVar.notify_all();
 #endif
+
+            {
+                std::scoped_lock lock(mPoolPost->mMutex);
+                for (auto &f : this->mPoolPost->mPool) {
+                    f(entry->mMessage); // expect this may change the content
+                }
+            }
         }
 
         /// Returns the topic name of this publisher.
