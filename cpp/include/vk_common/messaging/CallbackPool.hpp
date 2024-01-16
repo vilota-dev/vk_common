@@ -7,7 +7,6 @@
 #include <functional>
 
 namespace vkc {
-
     template<typename T> class Publisher;
     template<typename T> class Subscriber;
     template<typename T> class CallbackPool;

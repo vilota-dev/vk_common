@@ -3,6 +3,10 @@
 
 #include "BroadcastQueue.hpp"
 #include "CallbackPool.hpp"
+#include <atomic>
+#include <chrono>
+#include <memory>
+#include <mutex>
 
 namespace vkc {
     /// Represents a publisher to a message type.
@@ -12,42 +16,55 @@ namespace vkc {
         explicit Publisher(
             SharedBroadcastQueue<T>& queue,
             SharedCallbackPool<T>& poolPre,
-            SharedCallbackPool<T>& poolPost,
-            const std::string_view topic
-        ): mQueue(queue), mPoolPre(poolPre), mPoolPost(poolPost), mTopic(topic) {}
+            SharedCallbackPool<T>& poolPost
+        ): mQueue(queue), mPoolPre(poolPre), mPoolPost(poolPost) {}
         Publisher(const Publisher&) = delete;
         Publisher(Publisher&&) = default;
         Publisher& operator=(Publisher&&) = default;
 
-        /// Send the given message to all subscribers.
+        /// Sends the given value to all subscribers.
+        ///
+        /// A `Message` is automatically created and wraps the given value, and other metadata
+        /// (such as the publish time etc.) are automatically populated.
         void send(T value) {
+            auto now = std::chrono::steady_clock::now();
+            auto duration = now.time_since_epoch();
+            this->send(Message<T> {
+                .mSequenceNumber = mQueue->mSequenceNumber.fetch_add(1, std::memory_order_relaxed),
+                .mPublishTime = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(duration).count()),
+                .mPayload = std::move(value),
+            });
+        }
+
+        /// Sends the given message to all subscribers.
+        ///
+        /// The caller is in charge of constructing the `Message` instance and populating its metadata.
+        void send(Message<T> message) {
             {
-                std::scoped_lock<std::mutex> lock(this->mPoolPre->mMutex);
+                std::scoped_lock lock(mPoolPre->mMutex);
                 for (auto &f : this->mPoolPre->mPool) {
-                    f(value); // expect this may change the content
+                    f(message.mPayload); // expect this may change the content
                 }
             }
 
-            {
-                std::scoped_lock<std::mutex> lock(this->mQueue->mMutex);
-                for (auto &queue : this->mQueue->mQueues) {
-                    queue->push(value);
-                }
-            }
+            auto head = std::make_shared<typename BroadcastQueue<T>::Entry>();
 
-            {
-                std::scoped_lock<std::mutex> lock(this->mPoolPost->mMutex);
-                for (auto &f : this->mPoolPost->mPool) {
-                    f(value); // expect this may change the content
-                }
-            }
-
-            mCount++;
+#if __cplusplus >= 202002L
+            auto entry = mQueue->mHead.exchange(head, std::memory_order_relaxed);
+            entry->mMessage = std::move(message);
+            entry->mNext.store(head, std::memory_order_release);
+            entry->mNext.notify_all();
+#else
+            auto entry = std::atomic_exchange_explicit(&mQueue->mHead, head, std::memory_order_relaxed);
+            entry->mMessage = std::move(message);
+            std::atomic_store_explicit(&entry->mNext, head, std::memory_order_release);
+            entry->mCondVar.notify_all();
+#endif
         }
 
         /// Returns the topic name of this publisher.
         std::string_view topic() const {
-            return this->mTopic; 
+            return mQueue->topic();
         }
 
         /// Returns the number of messages this publisher has sent so far.
@@ -58,7 +75,6 @@ namespace vkc {
     private:
         SharedBroadcastQueue<T> mQueue;
         SharedCallbackPool<T> mPoolPre, mPoolPost;
-        std::string mTopic;
         uint64_t mCount = 0;
     };
 }

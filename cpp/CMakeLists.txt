@@ -8,14 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Dependencies.
 #======================================================
 
-find_package(TBB REQUIRED)
-message(STATUS "TBB FOUND ${TBB_VERSION_MAJOR}.${TBB_VERSION_MINOR} (interface version ${TBB_INTERFACE_VERSION}) headers in: ${TBB_INCLUDE_DIRS}")
-if (TBB_INTERFACE_VERSION LESS 11004)
-    # enable global_control header for earlier TBB versions (Ubuntu 16.04, 18.04)
-    add_definitions(-DTBB_PREVIEW_GLOBAL_CONTROL)
-endif()
-
-
 # static linking capnproto
 set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
 find_package(CapnProto REQUIRED)
@@ -95,4 +87,7 @@ target_include_directories(vk_common
         PRIVATE include/vk_common/capnp
         PUBLIC include)
 target_link_libraries(vk_common
-        PUBLIC CapnProto::capnp TBB::tbb)
+        PUBLIC CapnProto::capnp)
+
+add_executable(vk_test "tests/SimpleTest.cpp")
+target_link_libraries(vk_test PRIVATE vk_common)
