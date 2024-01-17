@@ -17,6 +17,7 @@ namespace vkc {
     struct Message {
         Message() = default;
         Message(T payload) : mPayload(std::move(payload)) {}
+        Message(T payload, Metadata metadata) : mPayload(std::move(payload)), mMetadata(metadata) {}
         
         Metadata mMetadata;         //< Metadata associated with the message.
         T mPayload;                 //< Payload of the message (i.e. the actual data being sent).
