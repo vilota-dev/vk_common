@@ -47,7 +47,7 @@ namespace vkc {
         /// If the topic is already registered to a different message type than `T`, `false` will
         /// be returned and the given callback will not be registered.
         template <typename T>
-        bool registerCallbackPre(const std::string_view topic, std::function<void(T&)> f) {
+        bool registerCallbackPre(const std::string_view topic, std::function<void(Message<T>&)> f) {
             auto pool = getCallbackPoolPre<T>(topic);
 
             if (pool != nullptr) {
@@ -63,7 +63,7 @@ namespace vkc {
         /// If the topic is already registered to a different message type than `T`, `false` will
         /// be returned and the given callback will not be registered.
         template <typename T>
-        bool registerCallbackPost(const std::string_view topic, std::function<void(T&)> f) {
+        bool registerCallbackPost(const std::string_view topic, std::function<void(Message<T>&)> f) {
             auto pool = getCallbackPoolPost<T>(topic);
             
             if (pool != nullptr) {
