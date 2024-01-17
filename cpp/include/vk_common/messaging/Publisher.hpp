@@ -22,26 +22,20 @@ namespace vkc {
         Publisher(Publisher&&) = default;
         Publisher& operator=(Publisher&&) = default;
 
-        /// Sends the given value to all subscribers.
-        ///
-        /// A `Message` is automatically created and wraps the given value, and other metadata
-        /// (such as the publish time etc.) are automatically populated.
-        void send(T value) {
-            auto now = std::chrono::steady_clock::now();
-            auto duration = now.time_since_epoch();
-            this->send(Message<T> {
-                .mMetadata = {
-                    .mSequenceNumber = mQueue->mSequenceNumber.fetch_add(1, std::memory_order_relaxed),
-                    .mPublishTime = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(duration).count()),
-                },
-                .mPayload = std::move(value),
-            });
-        }
-
         /// Sends the given message to all subscribers.
-        ///
-        /// The caller is in charge of constructing the `Message` instance and populating its metadata.
         void send(Message<T> message) {
+            if (!message.mMetadata.mPublishTime.has_value()) {
+                auto now = std::chrono::steady_clock::now();
+                auto duration = now.time_since_epoch();
+                message.mMetadata.mPublishTime = static_cast<uint64_t>(
+                    std::chrono::duration_cast<std::chrono::microseconds>(duration).count()
+                );
+            }
+
+            if (!message.mMetadata.mSequenceNumber.has_value()) {
+                message.mMetadata.mSequenceNumber = mQueue->mSequenceNumber.fetch_add(1, std::memory_order_relaxed);
+            }
+
             {
                 std::scoped_lock lock(mPoolPre->mMutex);
                 for (auto &f : this->mPoolPre->mPool) {
