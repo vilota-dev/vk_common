@@ -30,8 +30,10 @@ namespace vkc {
             auto now = std::chrono::steady_clock::now();
             auto duration = now.time_since_epoch();
             this->send(Message<T> {
-                .mSequenceNumber = mQueue->mSequenceNumber.fetch_add(1, std::memory_order_relaxed),
-                .mPublishTime = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(duration).count()),
+                .mMetadata = {
+                    .mSequenceNumber = mQueue->mSequenceNumber.fetch_add(1, std::memory_order_relaxed),
+                    .mPublishTime = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(duration).count()),
+                },
                 .mPayload = std::move(value),
             });
         }
