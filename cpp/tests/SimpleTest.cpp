@@ -1,6 +1,5 @@
 #include <stdexcept>
 #include "vk_common/messaging/Registry.hpp"
-#include <iostream>
 
 void callback(vkc::Message<int>& message) {
     // Rewrite first value.
