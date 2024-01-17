@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # static linking capnproto
 set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
-find_package(CapnProto REQUIRED)
+find_package(CapnProto 1.0.2 REQUIRED)
 
 
 #=====================================================
