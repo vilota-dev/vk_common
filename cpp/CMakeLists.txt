@@ -49,10 +49,8 @@ set(VKC_CAPNP_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/capnp")
 file(MAKE_DIRECTORY ${VKC_CAPNP_INCLUDE_DIR})
 file(MAKE_DIRECTORY ${VKC_CAPNP_OUTPUT_DIR})
 
-file(GLOB VKC_CAPNP_HEADERS "${VKC_CAPNP_INCLUDE_DIR}/*.capnp.h")
-file(GLOB VKC_CAPNP_SOURCES "${VKC_CAPNP_OUTPUT_DIR}/*.capnp.c++")
-file(REMOVE ${VKC_CAPNP_HEADERS})
-file(REMOVE ${VKC_CAPNP_SOURCES})
+set(VKC_CAPNP_HEADERS)
+set(VKC_CAPNP_SOURCES)
 
 foreach(VKC_CAPNP_SCHEMA_FILE ${VKC_CAPNP_SCHEMA_FILES})
         get_filename_component(VKC_CAPNP_SCHEMA_FILE_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/../capnp" ABSOLUTE)
@@ -62,20 +60,43 @@ foreach(VKC_CAPNP_SCHEMA_FILE ${VKC_CAPNP_SCHEMA_FILES})
                 message(FATAL_ERROR "Cap'n Proto schema file '${VKC_CAPNP_SCHEMA_FILE_PATH}' does not exist!")
         endif()
 
+        # https://stackoverflow.com/questions/18590445/cmake-custom-command-to-copy-and-rename
+
         set(VKC_CAPNP_COMPILE "capnp")
-        list(APPEND VKC_CAPNP_COMPILE "compile"
-                "--output=c++:${VKC_CAPNP_OUTPUT_DIR}"
-                "--src-prefix=${VKC_CAPNP_SCHEMA_FILE_PREFIX}"
-                "--import-path=${VKC_CAPNP_SCHEMA_FILE_PREFIX}"
-                "--import-path=${CAPNP_INCLUDE_DIRECTORY}"
-                "${VKC_CAPNP_SCHEMA_FILE_PATH}")
 
-        execute_process(COMMAND ${VKC_CAPNP_COMPILE})
+        add_custom_command(
+                OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${VKC_CAPNP_SCHEMA_FILE}.c++" "${CMAKE_CURRENT_BINARY_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h"
+                COMMAND "${VKC_CAPNP_COMPILE}"
+                ARGS compile
+                        --output=c++:${CMAKE_CURRENT_BINARY_DIR}
+                        --src-prefix=${VKC_CAPNP_SCHEMA_FILE_PREFIX}
+                        --import-path=${VKC_CAPNP_SCHEMA_FILE_PREFIX}
+                        --import-path=${CAPNP_INCLUDE_DIRECTORY}
+                        ${VKC_CAPNP_SCHEMA_FILE_PATH}
+                DEPENDS "${VKC_CAPNP_SCHEMA_FILE_PATH}"
+                COMMENT "Compiling Cap'n Proto schema ${VKC_CAPNP_SCHEMA_FILE}"
+                VERBATIM
+        )
 
-        file(RENAME "${VKC_CAPNP_OUTPUT_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h" "${VKC_CAPNP_INCLUDE_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h")
+        add_custom_command(
+                OUTPUT "${VKC_CAPNP_INCLUDE_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h"
+                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h "${VKC_CAPNP_INCLUDE_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h"
+                DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h"
+                VERBATIM
+        )
+
+        add_custom_command(
+                OUTPUT "${VKC_CAPNP_OUTPUT_DIR}/${VKC_CAPNP_SCHEMA_FILE}.c++"
+                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${VKC_CAPNP_SCHEMA_FILE}.c++ "${VKC_CAPNP_OUTPUT_DIR}/${VKC_CAPNP_SCHEMA_FILE}.c++"
+                DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${VKC_CAPNP_SCHEMA_FILE}.c++"
+                VERBATIM
+        )
+
         list(APPEND VKC_CAPNP_HEADERS "${VKC_CAPNP_INCLUDE_DIR}/${VKC_CAPNP_SCHEMA_FILE}.h")
         list(APPEND VKC_CAPNP_SOURCES "${VKC_CAPNP_OUTPUT_DIR}/${VKC_CAPNP_SCHEMA_FILE}.c++")
 endforeach()
+
+# set_source_files_properties(${VKC_CAPNP_HEADERS} ${VKC_CAPNP_SOURCES} PROPERTIES GENERATED TRUE)
 
 #=====================================================
 # Targets
