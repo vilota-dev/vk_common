@@ -9,22 +9,43 @@ $Cxx.namespace("vkc");
 # polar_azimuthal_angle[i][1] = std::atan2(p3dt[0], p3dt[1]);
 
 struct Flow2d {
+    # shall remain simple for mono tracker?
     id @0 :UInt64; # the upper 32-bit encodes the hash of the camera/stereo, the lower 32-bit encodes the actual id
     position @1 :import "vector2.capnp".Vector2d; # should be in 0~1 range, respect to width and height
     radial @2 :Float32; # radial in radian, from the positive z-axis
     azimuth @3 :Float32; # azimuth in radian, from the positive y-axix, counter clockwise
 
+    # TODO: add info about uncertainty, inferred from pixel. take account of rectification perhaps (more info from image)
+
     level @4 :UInt8; # mipmap level
     age @5 :UInt32;
 }
 
+# By design, the stereo optical flows would share the same id
 struct HFOpticalFlowResult {
 
     header @0 :import "header.capnp".Header;
-    cameraTopic @1 :Text;
+    streamName @1 :Text; # for debugging
 
     meanFlow @2 :List(Float32); # a ratio to the mean of height and width of the image, negative number means N.A.
     flowDensity @3 :List(Float32); # 9 numbers, centre, then clockwise from 0'o clock. sum indicate if we have at least 27 active tracking (3 average)
     flowData @4 :List(Flow2d); 
+
+    # the following is fed to sparse stereo system
+    # intrinsic is not needed as radial and azimuth are already provided
+    # extrinsic @5 :import "sensorextrinsic.capnp".SensorExtrinsic;
     
+}
+
+# we might run this at lower frequency
+struct HFSparseStereoResult {
+
+    header @0 :import "header.capnp".Header;
+    streamName @1 :Text; # for debugging
+
+    # new corners to be added, receiver to assign id
+    fiducialCorners @2 :List(Flow2d); # id likely to be the corner id, enhanced by grid;
+    matchedCorners @3 :List(Flow2d); # from motion stereo or actual stereo; the id can be existing, or requesting a new one given by the sender
+    filteredCorners @4 :List(UInt64); # to remove from the tracking
+
 }
