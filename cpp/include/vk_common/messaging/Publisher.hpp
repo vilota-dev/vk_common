@@ -39,7 +39,7 @@ namespace vkc {
             {
                 std::scoped_lock lock(mPoolPre->mMutex);
                 for (auto &f : this->mPoolPre->mPool) {
-                    f(message); // expect this may change the content
+                    f(message);
                 }
             }
 
@@ -60,7 +60,7 @@ namespace vkc {
             {
                 std::scoped_lock lock(mPoolPost->mMutex);
                 for (auto &f : this->mPoolPost->mPool) {
-                    f(entry->mMessage); // expect this may change the content
+                    f(entry->mMessage.value());
                 }
             }
         }

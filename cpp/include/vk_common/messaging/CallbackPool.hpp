@@ -31,7 +31,7 @@ namespace vkc {
             return std::shared_ptr<CallbackPool<T>>(new CallbackPool());
         }
 
-        void addCallback(std::function<void(Message<T>&)> f) {
+        void addCallback(std::function<void(const Message<T>&)> f) {
             std::scoped_lock<std::mutex> lock(mMutex);
             mPool.push_back(f);
         }

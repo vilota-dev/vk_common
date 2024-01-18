@@ -46,7 +46,7 @@ namespace vkc {
             mCount++;
             auto entry = mCurrent->mNext;
             std::swap(mCurrent, entry);
-            return entry->mMessage;
+            return entry->mMessage.value();
         }
 
         /// Check if there is an available message and then receives and returns it.
@@ -63,7 +63,7 @@ namespace vkc {
             } else {
                 mCount++;
                 std::swap(mCurrent, entry);
-                return entry->mMessage;
+                return entry->mMessage.value();
             }
         }
 

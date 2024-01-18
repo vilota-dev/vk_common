@@ -52,38 +52,21 @@ namespace vkc {
         friend class Subscriber<T>;
 
         class Entry {
-        public:
-            Entry() : mDummy(std::nullopt), mNext(nullptr) {}
-            ~Entry() {
-#if __cplusplus >= 202002L
-                auto next = mNext.load(std::memory_order_acquire);
-#else
-                auto next = std::atomic_load_explicit(&mNext, std::memory_order_acquire);
-#endif
-
-                if (next != nullptr) {
-                    mMessage.~Message<T>();
-                }
-            }
-
-        private:
             friend class Publisher<T>;
             friend class Subscriber<T>;
 
-            union {
-                Message<T> mMessage;    //< Message carried in this entry.
-                std::nullopt_t mDummy;  //< Value of the union when mMessage is uninitialized.
-            };
+            std::optional<Message<T>> mMessage;
 
 #if __cplusplus >= 202002L
             std::atomic<std::shared_ptr<Entry>> mNext;  //< Pointer to the next message in the queue.
-                                                        //< This must be accessed atomically.
-                                                        //< When this is `nullptr`, mMessage is uninitialized.
+                                                        //< When this is `nullptr`, mMessage does not contain a value.
                                                         //< This will only ever be written once.
 #else
             std::mutex mMutex;                  //< Used in combination with condition variable to signal next message is ready.
             std::condition_variable mCondVar;   //< Used in combination with mutex to signal next message is ready.
-            std::shared_ptr<Entry> mNext;       //< See the C++20 version above.
+            std::shared_ptr<Entry> mNext;       //< Pointer to the next message in the queue.
+                                                //< This must be accessed atomically!
+                                                //< This will only ever be written once.
 #endif
         }; // Entry
 
