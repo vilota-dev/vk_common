@@ -31,9 +31,7 @@ struct HFOpticalFlowResult {
     flowDensity @3 :List(Float32); # 9 numbers, centre, then clockwise from 0'o clock. sum indicate if we have at least 27 active tracking (3 average)
     flowData @4 :List(Flow2d); 
 
-    # the following is fed to sparse stereo system
-    # intrinsic is not needed as radial and azimuth are already provided
-    # extrinsic @5 :import "sensorextrinsic.capnp".SensorExtrinsic;
+    image @5 :import "image.capnp".Image; # image data may not be populated, but intrinsic would
     
 }
 
