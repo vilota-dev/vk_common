@@ -8,6 +8,11 @@ $Cxx.namespace("vkc");
 # polar_azimuthal_angle[i][0] = std::atan2(r, p3dt[2]);
 # polar_azimuthal_angle[i][1] = std::atan2(p3dt[0], p3dt[1]);
 
+struct Flow2dTrack {
+    seq @0 :Int32; # sequence in the past. 0 mean current prediction
+    position @1 :import "vector2.capnp".Vector2d;
+}
+
 struct Flow2d {
     # shall remain simple for mono tracker?
     id @0 :UInt64; # the upper 32-bit encodes the hash of the camera/stereo, the lower 32-bit encodes the actual id
@@ -19,6 +24,8 @@ struct Flow2d {
 
     level @4 :UInt8; # mipmap level
     age @5 :UInt32;
+
+    history @6 :List(Flow2dTrack); # first item would be predicted value, then historical
 }
 
 # By design, the stereo optical flows would share the same id
