@@ -10,13 +10,18 @@ $Cxx.namespace("vkc");
 
 struct Flow2dTrack {
     seq @0 :Int32; # sequence in the past. 0 mean current prediction
-    position @1 :import "vector2.capnp".Vector2d;
+    position @1 :import "vector2.capnp".Vector2f;
+}
+
+enum DetectorMethod {
+    fast @0;
+    sparsestereo @1;
 }
 
 struct Flow2d {
     # shall remain simple for mono tracker?
     id @0 :UInt64; # the upper 32-bit encodes the hash of the camera/stereo, the lower 32-bit encodes the actual id
-    position @1 :import "vector2.capnp".Vector2d; # should be in 0~1 range, respect to width and height
+    position @1 :import "vector2.capnp".Vector2f; # should be in 0~1 range, respect to width and height
     radial @2 :Float32; # radial in radian, from the positive z-axis
     azimuth @3 :Float32; # azimuth in radian, from the positive y-axix, counter clockwise
 
@@ -26,6 +31,7 @@ struct Flow2d {
     age @5 :UInt32;
 
     history @6 :List(Flow2dTrack); # first item would be predicted value, then historical
+    detectorMethod @7 :DetectorMethod;
 }
 
 # By design, the stereo optical flows would share the same id
