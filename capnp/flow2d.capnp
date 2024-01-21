@@ -13,12 +13,13 @@ struct Flow2dTrack {
     position @1 :import "vector2.capnp".Vector2f;
 }
 
-enum DetectorMethod {
-    fast @0;
-    sparsestereo @1;
-}
-
 struct Flow2d {
+
+    enum DetectorMethod {
+        fast @0;
+        sparseStereo @1;
+    }
+
     # shall remain simple for mono tracker?
     id @0 :UInt64; # the upper 32-bit encodes the hash of the camera/stereo, the lower 32-bit encodes the actual id
     position @1 :import "vector2.capnp".Vector2f; # should be in 0~1 range, respect to width and height
