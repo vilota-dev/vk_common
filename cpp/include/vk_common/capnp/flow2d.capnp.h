@@ -13,6 +13,7 @@
 #endif
 
 #include "header.capnp.h"
+#include "image.capnp.h"
 #include "vector2.capnp.h"
 
 CAPNP_BEGIN_HEADER
@@ -22,6 +23,7 @@ namespace schemas {
 
 CAPNP_DECLARE_SCHEMA(e3a2209336c85d95);
 CAPNP_DECLARE_SCHEMA(fc8a2516cde71c21);
+CAPNP_DECLARE_SCHEMA(c1e1087c5a2ddbc8);
 
 }  // namespace schemas
 }  // namespace capnp
@@ -51,7 +53,22 @@ struct HFOpticalFlowResult {
   class Pipeline;
 
   struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(fc8a2516cde71c21, 0, 5)
+    CAPNP_DECLARE_STRUCT_HEADER(fc8a2516cde71c21, 0, 6)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct HFSparseStereoResult {
+  HFSparseStereoResult() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(c1e1087c5a2ddbc8, 0, 5)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -187,8 +204,8 @@ public:
   inline bool hasHeader() const;
   inline  ::vkc::Header::Reader getHeader() const;
 
-  inline bool hasCameraTopic() const;
-  inline  ::capnp::Text::Reader getCameraTopic() const;
+  inline bool hasStreamName() const;
+  inline  ::capnp::Text::Reader getStreamName() const;
 
   inline bool hasMeanFlow() const;
   inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Reader getMeanFlow() const;
@@ -198,6 +215,9 @@ public:
 
   inline bool hasFlowData() const;
   inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader getFlowData() const;
+
+  inline bool hasImage() const;
+  inline  ::vkc::Image::Reader getImage() const;
 
 private:
   ::capnp::_::StructReader _reader;
@@ -234,12 +254,12 @@ public:
   inline void adoptHeader(::capnp::Orphan< ::vkc::Header>&& value);
   inline ::capnp::Orphan< ::vkc::Header> disownHeader();
 
-  inline bool hasCameraTopic();
-  inline  ::capnp::Text::Builder getCameraTopic();
-  inline void setCameraTopic( ::capnp::Text::Reader value);
-  inline  ::capnp::Text::Builder initCameraTopic(unsigned int size);
-  inline void adoptCameraTopic(::capnp::Orphan< ::capnp::Text>&& value);
-  inline ::capnp::Orphan< ::capnp::Text> disownCameraTopic();
+  inline bool hasStreamName();
+  inline  ::capnp::Text::Builder getStreamName();
+  inline void setStreamName( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initStreamName(unsigned int size);
+  inline void adoptStreamName(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownStreamName();
 
   inline bool hasMeanFlow();
   inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Builder getMeanFlow();
@@ -264,6 +284,13 @@ public:
   inline void adoptFlowData(::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>&& value);
   inline ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>> disownFlowData();
 
+  inline bool hasImage();
+  inline  ::vkc::Image::Builder getImage();
+  inline void setImage( ::vkc::Image::Reader value);
+  inline  ::vkc::Image::Builder initImage();
+  inline void adoptImage(::capnp::Orphan< ::vkc::Image>&& value);
+  inline ::capnp::Orphan< ::vkc::Image> disownImage();
+
 private:
   ::capnp::_::StructBuilder _builder;
   template <typename, ::capnp::Kind>
@@ -277,6 +304,130 @@ private:
 class HFOpticalFlowResult::Pipeline {
 public:
   typedef HFOpticalFlowResult Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+  inline  ::vkc::Header::Pipeline getHeader();
+  inline  ::vkc::Image::Pipeline getImage();
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class HFSparseStereoResult::Reader {
+public:
+  typedef HFSparseStereoResult Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
+  }
+#endif  // !CAPNP_LITE
+
+  inline bool hasHeader() const;
+  inline  ::vkc::Header::Reader getHeader() const;
+
+  inline bool hasStreamName() const;
+  inline  ::capnp::Text::Reader getStreamName() const;
+
+  inline bool hasFiducialCorners() const;
+  inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader getFiducialCorners() const;
+
+  inline bool hasMatchedCorners() const;
+  inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader getMatchedCorners() const;
+
+  inline bool hasFilteredCorners() const;
+  inline  ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Reader getFilteredCorners() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class HFSparseStereoResult::Builder {
+public:
+  typedef HFSparseStereoResult Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline bool hasHeader();
+  inline  ::vkc::Header::Builder getHeader();
+  inline void setHeader( ::vkc::Header::Reader value);
+  inline  ::vkc::Header::Builder initHeader();
+  inline void adoptHeader(::capnp::Orphan< ::vkc::Header>&& value);
+  inline ::capnp::Orphan< ::vkc::Header> disownHeader();
+
+  inline bool hasStreamName();
+  inline  ::capnp::Text::Builder getStreamName();
+  inline void setStreamName( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initStreamName(unsigned int size);
+  inline void adoptStreamName(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownStreamName();
+
+  inline bool hasFiducialCorners();
+  inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder getFiducialCorners();
+  inline void setFiducialCorners( ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader value);
+  inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder initFiducialCorners(unsigned int size);
+  inline void adoptFiducialCorners(::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>&& value);
+  inline ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>> disownFiducialCorners();
+
+  inline bool hasMatchedCorners();
+  inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder getMatchedCorners();
+  inline void setMatchedCorners( ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader value);
+  inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder initMatchedCorners(unsigned int size);
+  inline void adoptMatchedCorners(::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>&& value);
+  inline ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>> disownMatchedCorners();
+
+  inline bool hasFilteredCorners();
+  inline  ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Builder getFilteredCorners();
+  inline void setFilteredCorners( ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Reader value);
+  inline void setFilteredCorners(::kj::ArrayPtr<const  ::uint64_t> value);
+  inline  ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Builder initFilteredCorners(unsigned int size);
+  inline void adoptFilteredCorners(::capnp::Orphan< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>&& value);
+  inline ::capnp::Orphan< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>> disownFilteredCorners();
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class HFSparseStereoResult::Pipeline {
+public:
+  typedef HFSparseStereoResult Pipelines;
 
   inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
   inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
@@ -441,36 +592,36 @@ inline ::capnp::Orphan< ::vkc::Header> HFOpticalFlowResult::Builder::disownHeade
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
 
-inline bool HFOpticalFlowResult::Reader::hasCameraTopic() const {
+inline bool HFOpticalFlowResult::Reader::hasStreamName() const {
   return !_reader.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
 }
-inline bool HFOpticalFlowResult::Builder::hasCameraTopic() {
+inline bool HFOpticalFlowResult::Builder::hasStreamName() {
   return !_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
 }
-inline  ::capnp::Text::Reader HFOpticalFlowResult::Reader::getCameraTopic() const {
+inline  ::capnp::Text::Reader HFOpticalFlowResult::Reader::getStreamName() const {
   return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
-inline  ::capnp::Text::Builder HFOpticalFlowResult::Builder::getCameraTopic() {
+inline  ::capnp::Text::Builder HFOpticalFlowResult::Builder::getStreamName() {
   return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
-inline void HFOpticalFlowResult::Builder::setCameraTopic( ::capnp::Text::Reader value) {
+inline void HFOpticalFlowResult::Builder::setStreamName( ::capnp::Text::Reader value) {
   ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS), value);
 }
-inline  ::capnp::Text::Builder HFOpticalFlowResult::Builder::initCameraTopic(unsigned int size) {
+inline  ::capnp::Text::Builder HFOpticalFlowResult::Builder::initStreamName(unsigned int size) {
   return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS), size);
 }
-inline void HFOpticalFlowResult::Builder::adoptCameraTopic(
+inline void HFOpticalFlowResult::Builder::adoptStreamName(
     ::capnp::Orphan< ::capnp::Text>&& value) {
   ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS), kj::mv(value));
 }
-inline ::capnp::Orphan< ::capnp::Text> HFOpticalFlowResult::Builder::disownCameraTopic() {
+inline ::capnp::Orphan< ::capnp::Text> HFOpticalFlowResult::Builder::disownStreamName() {
   return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
@@ -582,6 +733,224 @@ inline void HFOpticalFlowResult::Builder::adoptFlowData(
 }
 inline ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>> HFOpticalFlowResult::Builder::disownFlowData() {
   return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::disown(_builder.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS));
+}
+
+inline bool HFOpticalFlowResult::Reader::hasImage() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS).isNull();
+}
+inline bool HFOpticalFlowResult::Builder::hasImage() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS).isNull();
+}
+inline  ::vkc::Image::Reader HFOpticalFlowResult::Reader::getImage() const {
+  return ::capnp::_::PointerHelpers< ::vkc::Image>::get(_reader.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS));
+}
+inline  ::vkc::Image::Builder HFOpticalFlowResult::Builder::getImage() {
+  return ::capnp::_::PointerHelpers< ::vkc::Image>::get(_builder.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS));
+}
+#if !CAPNP_LITE
+inline  ::vkc::Image::Pipeline HFOpticalFlowResult::Pipeline::getImage() {
+  return  ::vkc::Image::Pipeline(_typeless.getPointerField(5));
+}
+#endif  // !CAPNP_LITE
+inline void HFOpticalFlowResult::Builder::setImage( ::vkc::Image::Reader value) {
+  ::capnp::_::PointerHelpers< ::vkc::Image>::set(_builder.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS), value);
+}
+inline  ::vkc::Image::Builder HFOpticalFlowResult::Builder::initImage() {
+  return ::capnp::_::PointerHelpers< ::vkc::Image>::init(_builder.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS));
+}
+inline void HFOpticalFlowResult::Builder::adoptImage(
+    ::capnp::Orphan< ::vkc::Image>&& value) {
+  ::capnp::_::PointerHelpers< ::vkc::Image>::adopt(_builder.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::vkc::Image> HFOpticalFlowResult::Builder::disownImage() {
+  return ::capnp::_::PointerHelpers< ::vkc::Image>::disown(_builder.getPointerField(
+      ::capnp::bounded<5>() * ::capnp::POINTERS));
+}
+
+inline bool HFSparseStereoResult::Reader::hasHeader() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
+}
+inline bool HFSparseStereoResult::Builder::hasHeader() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
+}
+inline  ::vkc::Header::Reader HFSparseStereoResult::Reader::getHeader() const {
+  return ::capnp::_::PointerHelpers< ::vkc::Header>::get(_reader.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+inline  ::vkc::Header::Builder HFSparseStereoResult::Builder::getHeader() {
+  return ::capnp::_::PointerHelpers< ::vkc::Header>::get(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+#if !CAPNP_LITE
+inline  ::vkc::Header::Pipeline HFSparseStereoResult::Pipeline::getHeader() {
+  return  ::vkc::Header::Pipeline(_typeless.getPointerField(0));
+}
+#endif  // !CAPNP_LITE
+inline void HFSparseStereoResult::Builder::setHeader( ::vkc::Header::Reader value) {
+  ::capnp::_::PointerHelpers< ::vkc::Header>::set(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS), value);
+}
+inline  ::vkc::Header::Builder HFSparseStereoResult::Builder::initHeader() {
+  return ::capnp::_::PointerHelpers< ::vkc::Header>::init(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+inline void HFSparseStereoResult::Builder::adoptHeader(
+    ::capnp::Orphan< ::vkc::Header>&& value) {
+  ::capnp::_::PointerHelpers< ::vkc::Header>::adopt(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::vkc::Header> HFSparseStereoResult::Builder::disownHeader() {
+  return ::capnp::_::PointerHelpers< ::vkc::Header>::disown(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+
+inline bool HFSparseStereoResult::Reader::hasStreamName() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
+}
+inline bool HFSparseStereoResult::Builder::hasStreamName() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader HFSparseStereoResult::Reader::getStreamName() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder HFSparseStereoResult::Builder::getStreamName() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS));
+}
+inline void HFSparseStereoResult::Builder::setStreamName( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder HFSparseStereoResult::Builder::initStreamName(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS), size);
+}
+inline void HFSparseStereoResult::Builder::adoptStreamName(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> HFSparseStereoResult::Builder::disownStreamName() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS));
+}
+
+inline bool HFSparseStereoResult::Reader::hasFiducialCorners() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS).isNull();
+}
+inline bool HFSparseStereoResult::Builder::hasFiducialCorners() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader HFSparseStereoResult::Reader::getFiducialCorners() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::get(_reader.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS));
+}
+inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder HFSparseStereoResult::Builder::getFiducialCorners() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::get(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS));
+}
+inline void HFSparseStereoResult::Builder::setFiducialCorners( ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::set(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder HFSparseStereoResult::Builder::initFiducialCorners(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::init(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS), size);
+}
+inline void HFSparseStereoResult::Builder::adoptFiducialCorners(
+    ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::adopt(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>> HFSparseStereoResult::Builder::disownFiducialCorners() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::disown(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS));
+}
+
+inline bool HFSparseStereoResult::Reader::hasMatchedCorners() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
+}
+inline bool HFSparseStereoResult::Builder::hasMatchedCorners() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader HFSparseStereoResult::Reader::getMatchedCorners() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::get(_reader.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
+}
+inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder HFSparseStereoResult::Builder::getMatchedCorners() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::get(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
+}
+inline void HFSparseStereoResult::Builder::setMatchedCorners( ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::set(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>::Builder HFSparseStereoResult::Builder::initMatchedCorners(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::init(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), size);
+}
+inline void HFSparseStereoResult::Builder::adoptMatchedCorners(
+    ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::adopt(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>> HFSparseStereoResult::Builder::disownMatchedCorners() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::vkc::Flow2d,  ::capnp::Kind::STRUCT>>::disown(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
+}
+
+inline bool HFSparseStereoResult::Reader::hasFilteredCorners() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS).isNull();
+}
+inline bool HFSparseStereoResult::Builder::hasFilteredCorners() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Reader HFSparseStereoResult::Reader::getFilteredCorners() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>::get(_reader.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS));
+}
+inline  ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Builder HFSparseStereoResult::Builder::getFilteredCorners() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>::get(_builder.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS));
+}
+inline void HFSparseStereoResult::Builder::setFilteredCorners( ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>::set(_builder.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS), value);
+}
+inline void HFSparseStereoResult::Builder::setFilteredCorners(::kj::ArrayPtr<const  ::uint64_t> value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>::set(_builder.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>::Builder HFSparseStereoResult::Builder::initFilteredCorners(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>::init(_builder.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS), size);
+}
+inline void HFSparseStereoResult::Builder::adoptFilteredCorners(
+    ::capnp::Orphan< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>::adopt(_builder.getPointerField(
+      ::capnp::bounded<4>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>> HFSparseStereoResult::Builder::disownFilteredCorners() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint64_t,  ::capnp::Kind::PRIMITIVE>>::disown(_builder.getPointerField(
       ::capnp::bounded<4>() * ::capnp::POINTERS));
 }
 

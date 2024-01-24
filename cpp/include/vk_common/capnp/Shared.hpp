@@ -5,7 +5,6 @@
 #include <memory>
 #include <capnp/message.h>
 #include <capnp/serialize.h>
-#include <mutex>
 
 namespace vkc {
     /// Shared ownership to a capnproto value.
