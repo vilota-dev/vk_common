@@ -11,7 +11,7 @@ namespace vkc {
     template<typename T>
     class Subscriber {
     public:
-        explicit Subscriber(SharedBroadcastQueue<T>& parent, const std::string_view topic) : mParent(parent), mTopic(topic) {
+        explicit Subscriber(SharedBroadcastQueue<T>& parent, const std::string_view topic) : mParent(parent), mTopic(topic), mCount(0) {
             auto queue = std::make_shared<tbb::concurrent_bounded_queue<T>>();
             {
                 std::scoped_lock lock(mParent->mMutex);

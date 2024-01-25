@@ -14,7 +14,7 @@ namespace vkc {
             SharedCallbackPool<T>& poolPre,
             SharedCallbackPool<T>& poolPost,
             const std::string_view topic
-        ): mQueue(queue), mPoolPre(poolPre), mPoolPost(poolPost), mTopic(topic) {}
+        ): mQueue(queue), mPoolPre(poolPre), mPoolPost(poolPost), mTopic(topic), mCount(0) {}
         Publisher(const Publisher&) = delete;
         Publisher(Publisher&&) = default;
         Publisher& operator=(Publisher&&) = default;
@@ -59,7 +59,7 @@ namespace vkc {
         SharedBroadcastQueue<T> mQueue;
         SharedCallbackPool<T> mPoolPre, mPoolPost;
         std::string mTopic;
-        uint64_t mCount = 0;
+        uint64_t mCount;
     };
 }
 
