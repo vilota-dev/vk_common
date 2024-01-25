@@ -23,6 +23,7 @@ set(VKC_CAPNP_SCHEMA_FILES
         imu.capnp
         imulist.capnp
         image.capnp
+        odometry3d.capnp
         disparity.capnp
         so3.capnp
         se3.capnp
@@ -32,6 +33,7 @@ set(VKC_CAPNP_SCHEMA_FILES
         sensorextrinsic.capnp
         vector2.capnp
         tagdetection.capnp
+        twist3.capnp
         flow2d.capnp
 )
 
