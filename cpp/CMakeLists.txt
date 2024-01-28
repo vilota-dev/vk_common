@@ -91,6 +91,8 @@ foreach(VKC_CAPNP_SCHEMA_FILE ${VKC_CAPNP_SCHEMA_FILES})
         list(APPEND VKC_CAPNP_SOURCES "${VKC_CAPNP_OUTPUT_DIR}/${VKC_CAPNP_SCHEMA_FILE}.c++")
 endforeach()
 
+set(VKC_CAPNP_HEADERS ${VKC_CAPNP_HEADERS} PARENT_SCOPE)
+
 # set_source_files_properties(${VKC_CAPNP_HEADERS} ${VKC_CAPNP_SOURCES} PROPERTIES GENERATED TRUE)
 
 #=====================================================
