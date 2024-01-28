@@ -35,6 +35,7 @@ set(VKC_CAPNP_SCHEMA_FILES
         tagdetection.capnp
         twist3.capnp
         flow2d.capnp
+        pointcloud.capnp
 )
 
 set(VKC_CAPNP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/vk_common/capnp")
