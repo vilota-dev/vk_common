@@ -63,6 +63,8 @@ namespace vkc {
                     f(entry->mMessage.value());
                 }
             }
+
+            mCount++;
         }
 
         /// Returns the topic name of this publisher.
