@@ -25,7 +25,7 @@ namespace vkc {
         template <typename T>
         Subscriber<T> getSubscriber(const std::string_view topic) {
             auto queue = getQueue<T>(topic);
-            return Subscriber<T>(queue, topic);
+            return Subscriber<T>(queue);
         }
 
         /// Constructs a publisher to a topic.
@@ -37,7 +37,7 @@ namespace vkc {
             auto queue = getQueue<T>(topic);
             auto poolPre = getCallbackPoolPre<T>(topic);
             auto poolPost = getCallbackPoolPost<T>(topic);
-            return Publisher<T>(queue, poolPre, poolPost, topic);
+            return Publisher<T>(queue, poolPre, poolPost);
         }
 
         /// Register an early callback for a topic.
@@ -47,7 +47,7 @@ namespace vkc {
         /// If the topic is already registered to a different message type than `T`, `false` will
         /// be returned and the given callback will not be registered.
         template <typename T>
-        bool registerCallbackPre(const std::string_view topic, std::function<void(T&)> f) {
+        bool registerCallbackPre(const std::string_view topic, std::function<void(const Message<T>&)> f) {
             auto pool = getCallbackPoolPre<T>(topic);
 
             if (pool != nullptr) {
@@ -63,7 +63,7 @@ namespace vkc {
         /// If the topic is already registered to a different message type than `T`, `false` will
         /// be returned and the given callback will not be registered.
         template <typename T>
-        bool registerCallbackPost(const std::string_view topic, std::function<void(T&)> f) {
+        bool registerCallbackPost(const std::string_view topic, std::function<void(const Message<T>&)> f) {
             auto pool = getCallbackPoolPost<T>(topic);
             
             if (pool != nullptr) {
@@ -79,7 +79,7 @@ namespace vkc {
         SharedBroadcastQueue<T> getQueue(const std::string_view topic) {
             auto it = mQueues.find(topic);
             if (it == mQueues.end()) {
-                it = mQueues.emplace(topic, BroadcastQueue<T>::create()).first;
+                it = mQueues.emplace(topic, BroadcastQueue<T>::create(topic)).first;
             }
 
             auto queue = std::dynamic_pointer_cast<BroadcastQueue<T>>(it->second);

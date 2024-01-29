@@ -1,8 +1,10 @@
 #ifndef VKC_SUBSCRIBER_HPP
 #define VKC_SUBSCRIBER_HPP
 
+#include <atomic>
 #include <memory>
 #include <algorithm>
+#include <optional>
 #include "BroadcastQueue.hpp"
 #include "CallbackPool.hpp"
 
@@ -11,48 +13,18 @@ namespace vkc {
     template<typename T>
     class Subscriber {
     public:
-        explicit Subscriber(SharedBroadcastQueue<T>& parent, const std::string_view topic) : mParent(parent), mTopic(topic), mCount(0) {
-            auto queue = std::make_shared<tbb::concurrent_bounded_queue<T>>();
-            {
-                std::scoped_lock lock(mParent->mMutex);
-                mParent->mQueues.push_back(queue);
-            }
-            this->mQueue = queue;
-        };
-        ~Subscriber() {
-            if (mParent) {
-                std::scoped_lock lock(mParent->mMutex);
-                auto it = std::find(mParent->mQueues.begin(), mParent->mQueues.end(), this->mQueue);
-                if (it != mParent->mQueues.end()) {
-                    mParent->mQueues.erase(it);
-                }
-            }
-        }
+        Subscriber(SharedBroadcastQueue<T>& parent)
+            : mParent(parent),
+              mCurrent(mParent->mHead),
+              mCount(0) {};
+        ~Subscriber() = default;
         Subscriber(const Subscriber&) = delete;
         Subscriber(Subscriber&&) = default;
         Subscriber& operator=(Subscriber&&) = default;
 
-        /// Block until there is an available message and then receives and returns it.
-        T recv() {
-            T result;
-            this->mQueue->pop(result);
-            this->mCount++;
-            return result;
-        }
-
-        /// Receives and writes the message at the given address if there is one immediately available, or
-        /// returns false otherwise.
-        bool tryRecv(T& result) {
-            if (this->mQueue->try_pop(result)) {
-                this->mCount++;
-                return true;
-            }
-            return false;
-        }
-
         /// Returns the topic name of this subscriber.
         std::string_view topic() const {
-            return this->mTopic;
+            return mParent->mTopic;
         }
 
         /// Returns the number of messages this subscriber has received so far.
@@ -60,10 +32,45 @@ namespace vkc {
             return mCount;
         }
 
+        /// Block until there is an available message and then receives and returns it.
+        Message<T> recv() {
+#if __cplusplus >= 202002L
+            mCurrent->mNext.wait(nullptr, std::memory_order_acquire);
+#else
+            {
+                std::unique_lock lock(mCurrent->mMutex);
+                while (std::atomic_load_explicit(&mCurrent->mNext, std::memory_order_acquire) == nullptr) {
+                    mCurrent->mCondVar.wait(lock);
+                }
+            }
+#endif
+            mCount++;
+            auto entry = mCurrent->mNext;
+            std::swap(mCurrent, entry);
+            return entry->mMessage.value();
+        }
+
+        /// Check if there is an available message and then receives and returns it.
+        /// If there is no available message, this method returns a `std::nullopt`.
+        std::optional<Message<T>> tryRecv() {
+#if __cplusplus >= 202002L
+            auto entry = mCurrent->mNext.load(std::memory_order_acquire);
+#else
+            auto entry = std::atomic_load_explicit(&mCurrent->mNext, std::memory_order_acquire);
+#endif
+
+            if (entry == nullptr) {
+                return std::nullopt;
+            } else {
+                mCount++;
+                std::swap(mCurrent, entry);
+                return entry->mMessage.value();
+            }
+        }
+
     private:
         SharedBroadcastQueue<T> mParent;
-        std::shared_ptr<tbb::concurrent_bounded_queue<T>> mQueue;
-        std::string mTopic;
+        std::shared_ptr<typename BroadcastQueue<T>::Entry> mCurrent;
         uint64_t mCount;
     };
 }
