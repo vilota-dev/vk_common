@@ -39,7 +39,7 @@ namespace vkc {
 #else
             {
                 std::unique_lock lock(mCurrent->mMutex);
-                while (std::atomic_load_explicit(&mCurrent->mNext, std::memory_order_acquire) == nullptr) {
+                while (mCurrent->mNext == nullptr) {
                     mCurrent->mCondVar.wait(lock);
                 }
             }
@@ -56,7 +56,9 @@ namespace vkc {
 #if __cplusplus >= 202002L
             auto entry = mCurrent->mNext.load(std::memory_order_acquire);
 #else
-            auto entry = std::atomic_load_explicit(&mCurrent->mNext, std::memory_order_acquire);
+            std::unique_lock lock(mCurrent->mMutex);
+            auto entry = mCurrent->mNext;
+            lock.unlock();
 #endif
 
             if (entry == nullptr) {
