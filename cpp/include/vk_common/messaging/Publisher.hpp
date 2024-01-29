@@ -53,7 +53,9 @@ namespace vkc {
 #else
             auto entry = std::atomic_exchange_explicit(&mQueue->mHead, head, std::memory_order_relaxed);
             entry->mMessage = std::move(message);
-            std::atomic_store_explicit(&entry->mNext, head, std::memory_order_release);
+            std::unique_lock lock(entry->mMutex);
+            entry->mNext = head;
+            lock.unlock();
             entry->mCondVar.notify_all();
 #endif
 
