@@ -13,6 +13,18 @@ struct Flow2dTrack {
     position @1 :import "vector2.capnp".Vector2f;
 }
 
+struct DistanceEstimation {
+
+    enum DistanceEstimationMethod {
+        singleFrameStereo @0;
+        motionStereo @1;
+    }
+
+    method @0 :DistanceEstimationMethod;
+    distance @1 :Float32; # in meters
+
+}
+
 struct Flow2d {
 
     enum DetectorMethod {
@@ -33,6 +45,7 @@ struct Flow2d {
 
     history @6 :List(Flow2dTrack); # first item would be predicted value, then historical
     detectorMethod @7 :DetectorMethod;
+    # ditanceEstimations @8 :List(DistanceEstimation); 
 }
 
 # By design, the stereo optical flows would share the same id
@@ -59,5 +72,6 @@ struct HFSparseStereoResult {
     fiducialCorners @2 :List(Flow2d); # id likely to be the corner id, enhanced by grid;
     matchedCorners @3 :List(Flow2d); # from motion stereo or actual stereo; the id can be existing, or requesting a new one given by the sender
     filteredCorners @4 :List(UInt64); # to remove from the tracking
+    # updatedCorners @5 :List(Flow2d)
 
 }

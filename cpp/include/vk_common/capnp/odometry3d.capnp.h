@@ -62,7 +62,7 @@ struct Odometry3d {
 
 
   struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(9928f99e42745410, 2, 5)
+    CAPNP_DECLARE_STRUCT_HEADER(9928f99e42745410, 3, 5)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -110,6 +110,10 @@ public:
   inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Reader getTwistCovariance() const;
 
   inline  ::uint32_t getResetCounter() const;
+
+  inline float getMetricVisionFailureLikelihood() const;
+
+  inline float getEstimatedFailureModeDrift() const;
 
 private:
   ::capnp::_::StructReader _reader;
@@ -187,6 +191,12 @@ public:
 
   inline  ::uint32_t getResetCounter();
   inline void setResetCounter( ::uint32_t value);
+
+  inline float getMetricVisionFailureLikelihood();
+  inline void setMetricVisionFailureLikelihood(float value);
+
+  inline float getEstimatedFailureModeDrift();
+  inline void setEstimatedFailureModeDrift(float value);
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -466,6 +476,34 @@ inline  ::uint32_t Odometry3d::Builder::getResetCounter() {
 inline void Odometry3d::Builder::setResetCounter( ::uint32_t value) {
   _builder.setDataField< ::uint32_t>(
       ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
+}
+
+inline float Odometry3d::Reader::getMetricVisionFailureLikelihood() const {
+  return _reader.getDataField<float>(
+      ::capnp::bounded<3>() * ::capnp::ELEMENTS);
+}
+
+inline float Odometry3d::Builder::getMetricVisionFailureLikelihood() {
+  return _builder.getDataField<float>(
+      ::capnp::bounded<3>() * ::capnp::ELEMENTS);
+}
+inline void Odometry3d::Builder::setMetricVisionFailureLikelihood(float value) {
+  _builder.setDataField<float>(
+      ::capnp::bounded<3>() * ::capnp::ELEMENTS, value);
+}
+
+inline float Odometry3d::Reader::getEstimatedFailureModeDrift() const {
+  return _reader.getDataField<float>(
+      ::capnp::bounded<4>() * ::capnp::ELEMENTS);
+}
+
+inline float Odometry3d::Builder::getEstimatedFailureModeDrift() {
+  return _builder.getDataField<float>(
+      ::capnp::bounded<4>() * ::capnp::ELEMENTS);
+}
+inline void Odometry3d::Builder::setEstimatedFailureModeDrift(float value) {
+  _builder.setDataField<float>(
+      ::capnp::bounded<4>() * ::capnp::ELEMENTS, value);
 }
 
 }  // namespace

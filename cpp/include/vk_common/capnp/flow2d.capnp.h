@@ -22,6 +22,13 @@ namespace capnp {
 namespace schemas {
 
 CAPNP_DECLARE_SCHEMA(82fff9a03fb96224);
+CAPNP_DECLARE_SCHEMA(9819f93049d7bd4d);
+CAPNP_DECLARE_SCHEMA(82154ed4078968f9);
+enum class DistanceEstimationMethod_82154ed4078968f9: uint16_t {
+  SINGLE_FRAME_STEREO,
+  MOTION_STEREO,
+};
+CAPNP_DECLARE_ENUM(DistanceEstimationMethod, 82154ed4078968f9);
 CAPNP_DECLARE_SCHEMA(e3a2209336c85d95);
 CAPNP_DECLARE_SCHEMA(b51932346219881a);
 enum class DetectorMethod_b51932346219881a: uint16_t {
@@ -46,6 +53,23 @@ struct Flow2dTrack {
 
   struct _capnpPrivate {
     CAPNP_DECLARE_STRUCT_HEADER(82fff9a03fb96224, 1, 1)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct DistanceEstimation {
+  DistanceEstimation() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+  typedef ::capnp::schemas::DistanceEstimationMethod_82154ed4078968f9 DistanceEstimationMethod;
+
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(9819f93049d7bd4d, 1, 0)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -180,6 +204,87 @@ public:
       : _typeless(kj::mv(typeless)) {}
 
   inline  ::vkc::Vector2f::Pipeline getPosition();
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class DistanceEstimation::Reader {
+public:
+  typedef DistanceEstimation Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
+  }
+#endif  // !CAPNP_LITE
+
+  inline  ::vkc::DistanceEstimation::DistanceEstimationMethod getMethod() const;
+
+  inline float getDistance() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class DistanceEstimation::Builder {
+public:
+  typedef DistanceEstimation Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline  ::vkc::DistanceEstimation::DistanceEstimationMethod getMethod();
+  inline void setMethod( ::vkc::DistanceEstimation::DistanceEstimationMethod value);
+
+  inline float getDistance();
+  inline void setDistance(float value);
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class DistanceEstimation::Pipeline {
+public:
+  typedef DistanceEstimation Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
 private:
   ::capnp::AnyPointer::Pipeline _typeless;
   friend class ::capnp::PipelineHook;
@@ -621,6 +726,34 @@ inline void Flow2dTrack::Builder::adoptPosition(
 inline ::capnp::Orphan< ::vkc::Vector2f> Flow2dTrack::Builder::disownPosition() {
   return ::capnp::_::PointerHelpers< ::vkc::Vector2f>::disown(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+
+inline  ::vkc::DistanceEstimation::DistanceEstimationMethod DistanceEstimation::Reader::getMethod() const {
+  return _reader.getDataField< ::vkc::DistanceEstimation::DistanceEstimationMethod>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::vkc::DistanceEstimation::DistanceEstimationMethod DistanceEstimation::Builder::getMethod() {
+  return _builder.getDataField< ::vkc::DistanceEstimation::DistanceEstimationMethod>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void DistanceEstimation::Builder::setMethod( ::vkc::DistanceEstimation::DistanceEstimationMethod value) {
+  _builder.setDataField< ::vkc::DistanceEstimation::DistanceEstimationMethod>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline float DistanceEstimation::Reader::getDistance() const {
+  return _reader.getDataField<float>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS);
+}
+
+inline float DistanceEstimation::Builder::getDistance() {
+  return _builder.getDataField<float>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS);
+}
+inline void DistanceEstimation::Builder::setDistance(float value) {
+  _builder.setDataField<float>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, value);
 }
 
 inline  ::uint64_t Flow2d::Reader::getId() const {

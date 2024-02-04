@@ -40,4 +40,7 @@ struct Odometry3d {
 
     resetCounter @8 :UInt32;
 
+    metricVisionFailureLikelihood @9 :Float32; # 0 means vision functioning, 1 means imu only
+    estimatedFailureModeDrift @10 :Float32; # additional drift due to vision failure
+
 }
